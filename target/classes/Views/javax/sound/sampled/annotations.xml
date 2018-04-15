@@ -1,0 +1,5 @@
+<root>
+    <item name='javax.sound.sampled.AudioInputStream'>
+        <annotation name='java.lang.Deprecated'/>
+    </item>
+</root>
