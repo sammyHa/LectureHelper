@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="unnamed">
+    <output-path>$PROJECT_DIR$/out/artifacts/unnamed</output-path>
+    <root id="root">
+      <element id="library" level="project" name="controlsfx-9.0.0" />
+    </root>
+  </artifact>
+</component>
