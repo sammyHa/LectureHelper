@@ -1,123 +1,133 @@
-package sample.Model;
 
-import com.google.cloud.speech.v1p1beta1.SpeechClient;
-import javafx.concurrent.Task;
-import javafx.fxml.FXML;
-import javafx.scene.image.ImageView;
+/*
+ * Copyright (c) 2018. by Samim Hakimi
+ */
+
+package sample.Model;
+import javafx.scene.control.Alert;
 import sample.Controllers.Controller;
 
 import javax.sound.sampled.*;
 import java.io.File;
-import java.io.IOException;
 
 /**
- * This class is recording the voice and stores it to local drive
+ * This class is recording the voice and stores it to local directory
  */
 public class Recording {
-    String path = "C:/Users/SAMIM/Desktop/Sac/OurProjec3/src/main/resources/assets/audio.wav";
+
+    String path = "C:/Users/SAMIM/Desktop/audio.wav"; ///Sac/OurProjec3/src/main/resources/assets/
+
     public Recording(){
         //empty constructor
     }
 
-    @FXML private ImageView icrecord;
-    //record time 60 minutes 3666666
-    long seconds = 5000;
 
-    //instantiateing the class Speech
-    Speech speech = new Speech();
-
+    // reading the audio data using TargetDataLine Interface
      TargetDataLine targetDataLine;
 
     public TargetDataLine getTargetDataLine() {
         return targetDataLine;
     }
 
-    public void RecordingMethod() throws InterruptedException, LineUnavailableException {
+    public void setTargetDataLine(TargetDataLine targetDataLine) {
+        this.targetDataLine = targetDataLine;
+    }
+
+//  get the audio format method
+    public AudioFormat getAudioFormat() {
+        float sampleRate = 16000.0f;
+        //8000,11025,16000,22050,44100
+        int sampleSizeInBits = 16;
+        //8,16
+        int channels = 1;
+        //1,2
+        boolean signed = true;
+        //true,false
+        boolean bigEndian = false;
+        //true,false
+        return new AudioFormat(sampleRate, sampleSizeInBits, channels, signed, bigEndian);
+    }
 
 
-        AudioFormat audioFormat = new AudioFormat(16000, 16, 1 , true, true );
+    public void initTargetDataLine()throws LineUnavailableException{
 
-        //this Dataline interface
-        DataLine.Info info = new DataLine.Info(TargetDataLine.class, audioFormat);
+        //gets data from mic
+        DataLine.Info info = new DataLine.Info(TargetDataLine.class, getAudioFormat());
+
         if (!AudioSystem.isLineSupported(info)){
-            System.out.println("Line is not supported!");
+            System.out.println("No Mic!");
         }
-         targetDataLine = (TargetDataLine) AudioSystem.getLine(info);
+        //gets the Audio format from system
+        targetDataLine = (TargetDataLine) AudioSystem.getLine(info);
 
-        targetDataLine.open();
+        // opens the line or mic
+        targetDataLine.open(getAudioFormat());
 
-        System.out.println("Recording now..");
+        Alert recordingMessage = new Alert(Alert.AlertType.INFORMATION);
+        recordingMessage.setTitle("Info Box");
+        recordingMessage.setContentText("Recording now...");
+        recordingMessage.setHeaderText(null);
+        recordingMessage.show();
 
-        targetDataLine.start();
+    }
 
-
-
-        Thread thread = new Thread(() -> {
-
-            //this is recording audio
-            AudioInputStream audioInputStream = new AudioInputStream(targetDataLine);
-
-            //This is where the recorded file will be saved
-
-            File wavFile = new File(path);
-            try {
-
-                //Audio format. there is a lot of format but a few are supported by all systems one of is WAVE.
-                AudioSystem.write(audioInputStream, AudioFileFormat.Type.WAVE,wavFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        thread.start();
-        Controller controller = new Controller();
-        //controller.setTimer();
+    public void CaptureAudio() throws LineUnavailableException {
 
 
+//      Audio format supported and buffer size
+        getAudioFormat();
 
-        //how long do you want ot record the audio
+        initTargetDataLine();
 
-            Thread.sleep(seconds);
+        // Starts capturing audio from the mic
+        new StartThread().start();
 
-            targetDataLine.stop();
-            targetDataLine.close();
-        System.out.println("Recording stopped");
+    }
+
+    //Stops recording
+    public void StopRecording() throws Exception {
+        targetDataLine.stop();
+        targetDataLine.close();
+        Alert recordingMessage = new Alert(Alert.AlertType.INFORMATION);
+        recordingMessage.setTitle("Info Box");
+        recordingMessage.setContentText("Recording Stopped");
+        recordingMessage.setHeaderText(null);
+        recordingMessage.show();
         try {
-            //speech.SpeechTransciber();
-            speech.streamingRecognizeFile(path);
+            Controller controller = new Controller();
+       // controller.Transcribe(path);
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-
     }
 
-    /*
-    ----------------------------java------------------------------------
-     */
+    // class for the Thread
+    class StartThread extends Thread {
 
+        public void run(){
 
-    private static  Task<Object> StreamingMicRecognizeAsync(int seconds)
-    {
-        if(AudioSystem.isLineSupported(null)){
-            System.out.println("No mic");
-            return null;
+            AudioFileFormat.Type fileType;
+            File audioFile;
+
+            //Set the file type and the file extension
+            fileType = AudioFileFormat.Type.WAVE;
+            audioFile = new File(path);
+
+            try{
+                targetDataLine.open(getAudioFormat());
+                targetDataLine.start();
+                AudioSystem.write(
+                        new AudioInputStream(targetDataLine),
+                        fileType,
+                        audioFile);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
         }
-        try {
-            SpeechClient speech = SpeechClient.create();
-
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
     }
-
-
-    /*
-    ----------------------------java------------------------------------
-     */
 
 }

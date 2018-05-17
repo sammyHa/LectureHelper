@@ -1,40 +1,46 @@
 
+/*
+ * Copyright (c) 2018. by Samim Hakimi
+ */
+
 package sample.Controllers;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import org.controlsfx.dialog.FontSelectorDialog;
+import sample.Model.RealTimeSpeech;
 import sample.Model.Recording;
 
 import javax.sound.sampled.LineUnavailableException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 public class Controller {
 
     //vars
-
    private Timer timer;
    private TimerTask task;
    private int interval = 0;
    private Recording recordingVoice = new Recording();
 
+   private RealTimeSpeech realTimeSpeech = new RealTimeSpeech();
+
+   public Controller(){
+       realTimeSpeech.mDuplex();
+   }
+
     @FXML
     private Label timerlabel;
     @FXML
     private Button icrecord;
+    @FXML
+    private Button btnStop;
     @FXML
     private TextArea textArea;
     @FXML
@@ -47,7 +53,6 @@ public class Controller {
     private Pane pane;
     @FXML
     private Text text;
-
 
 
     public Timer getTimer() {
@@ -74,13 +79,6 @@ public class Controller {
         this.interval = interval;
     }
 
-    public Recording getRecordingVoice() {
-        return recordingVoice;
-    }
-
-    public void setRecordingVoice(Recording recordingVoice) {
-        this.recordingVoice = recordingVoice;
-    }
 
     public Label getTimerlabel() {
         return timerlabel;
@@ -146,79 +144,39 @@ public class Controller {
         this.text = text;
     }
 
-    /**
-     * getter and setters
-     *
-     */
+    public void StartRecording() throws LineUnavailableException, InterruptedException {
+        realTimeSpeech.StartRecord();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public void clickme() throws LineUnavailableException, InterruptedException {
-        recordingVoice.RecordingMethod();
-    }
-
-
-    public void setTimer() {
-        timer = new Timer();
-        task = new TimerTask() {
-            @Override
-            public void run() {
-                interval++;
-                //String timers = String.valueOf(interval);
-                //timerlabel.setText(("Timer: " + timers));
-                System.out.println("Timer: " + interval);
-            }
-        };
-
-        timer.scheduleAtFixedRate(task,1000,1000);
+//        recordingVoice.CaptureAudio();
+//        btnStop.setDisable(false);
+//        icrecord.setDisable(true);
 
     }
+
+    public void mStopRecording() throws Exception {
+            realTimeSpeech.stop();
+//        recordingVoice.StopRecording();
+//        btnStop.setDisable(true);
+//        icrecord.setDisable(false);
+
+    }
+
 
         //color picker
-
-        public void ChangeColor(ActionEvent event) {
-           // Color color = colorpicker.getValue();
-
-
+        public void ChangeColor() {
             //this will convert the values of the colorpicker to hex so we can use it from the css
             String color = "#" + Integer.toHexString(colorpicker.getValue().hashCode()).substring(0, 6).toUpperCase();
             textArea.setStyle("-fx-text-fill: " + color +";");
-            textArea.setText("Good its changed! ");
+            textArea.setText("Color just changed ");
         }
 
         //Select font style method
     public void ChangeFontStyle(){
-        // iff add the event handler will need to click the button two times to excute
-        // first will be for the action to be excuted and second time the method.
-        // dont put the button.onActionClick(e->{});
+        /**
+         * if the event handler is passed as a parameter than will need to click the button two times to execute
+         * first will be for the action to be excuted and second time the method.
+         * don't use the button.onActionClick(e->{}); instead call the method inside the button in fxml
+         */
             FontSelectorDialog fontSelectorDialog = new FontSelectorDialog(null);
             fontSelectorDialog.setTitle("Select Font");
             fontSelectorDialog.showAndWait();
@@ -227,31 +185,50 @@ public class Controller {
     }
 
     //save to file method
-
     public void SaveToFile(){
 
-        //this will save the file for the same day it was recorded and automatically date the file.
-        String mDateAndTime = new SimpleDateFormat("yyyy_MM_dd_HH_mm").format(Calendar.getInstance().getTime());
-        String path = "C:/Users/SAMIM/Desktop/";
+
+        if ( textArea.getText().trim().isEmpty()){
+            Alert message = new Alert(Alert.AlertType.WARNING);
+            message.setTitle("Error");
+            message.setHeaderText(null);
+            message.setContentText("There is no data to be saved!");
+            message.show();
+
+        }else {
+            // Saves the document with current system date and time.
+            String mDateAndTime = new SimpleDateFormat("yyyy_MM_dd_HH_mm").format(Calendar.getInstance().getTime());
+            String path = "C:/Users/SAMIM/Desktop/";
             File filePath = new File(path + "Recorded on " + mDateAndTime +".doc");
             try {
                 FileWriter fileWriter = new FileWriter(filePath,true);
-                PrintWriter printWriter = new PrintWriter(fileWriter);
-               String text = textArea.getText();
+                //PrintWriter printWriter = new PrintWriter(fileWriter);
+                String text = textArea.getText();
                 SaveFile(text,filePath);
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
-            System.out.println("Saved");
+            Alert message = new Alert(Alert.AlertType.INFORMATION);
+            message.setTitle("Information Box");
+            message.setHeaderText(null);
+            message.setContentText("Your document has been saved to \n" + filePath);
+            message.show();
+        }
 
     }
 
-    private void SaveFile(String content, File file)throws IOException{
+    private void SaveFile(String content, File file){
 
-        FileWriter fileWriter = null;
-        fileWriter = new FileWriter(file);
-        fileWriter.write(content);
-        fileWriter.close();
+        try{
+            FileWriter fileWriter;
+            fileWriter = new FileWriter(file);
+            fileWriter.write(content);
+            fileWriter.close();
+        }catch (IOException io){
+            System.out.println("Error! " + io);
+        }
 
     }
+
+
 }

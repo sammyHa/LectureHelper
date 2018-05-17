@@ -1,3 +1,8 @@
+
+/*
+ * Copyright (c) 2018. by Samim Hakimi
+ */
+
 package sample;
 
 import javafx.application.Application;
@@ -11,7 +16,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         Parent root = FXMLLoader.load(getClass().getResource("/Views/Main.fxml"));
-        primaryStage.setTitle("SC Speech");
+        primaryStage.setTitle("Lecture Helper");
         primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.show();
 

@@ -1,52 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="636.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controllers.Controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="656.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controllers.Controller">
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
-            <MenuBar>
-               <menus>
-                  <Menu mnemonicParsing="false" text="File">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="Close" />
-                     </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="Edit">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="Delete" />
-                     </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="Help">
-                     <items>
-                        <MenuItem mnemonicParsing="false" text="About" />
-                     </items>
-                  </Menu>
-               </menus>
-            </MenuBar>
-            <HBox spacing="10.0">
+            <HBox prefHeight="48.0" prefWidth="640.0" spacing="10.0">
                <children>
-                  <Pane fx:id="pane" prefHeight="0.0" prefWidth="120.0" />
-                  <Text fx:id="text" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="174.13671875" />
-                  <Region prefHeight="60.0" prefWidth="203.0" HBox.hgrow="ALWAYS" />
-                  <ToggleButton mnemonicParsing="false" prefHeight="39.0" prefWidth="59.0" text="ToggleButton" />
-                  <Button fx:id="icrecord" mnemonicParsing="false" onAction="#clickme" styleClass="mic_button_normal" stylesheets="@../Styles/Style.css" />
+                  <Pane fx:id="pane" prefHeight="45.0" prefWidth="120.0" />
+                  <Region prefHeight="56.0" prefWidth="241.0" HBox.hgrow="ALWAYS" />
+                  <Button fx:id="btnStop" mnemonicParsing="false" onAction="#mStopRecording" prefHeight="38.0" prefWidth="72.0" styleClass="mic_button_off" stylesheets="@../Styles/Style.css">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
+                  <Button fx:id="icrecord" mnemonicParsing="false" onAction="#StartRecording" styleClass="mic_button_normal" stylesheets="@../Styles/Style.css">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor></Button>
                </children>
                <VBox.margin>
                   <Insets bottom="8.0" left="8.0" right="8.0" top="8.0" />
@@ -68,11 +50,11 @@
       </HBox>
    </bottom>
    <left>
-      <VBox fx:id="fontSizeButton" prefHeight="229.0" prefWidth="100.0" spacing="40.0" BorderPane.alignment="CENTER">
+      <VBox fx:id="fontSizeButton" prefHeight="264.0" prefWidth="119.0" spacing="40.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="savetofile" mnemonicParsing="false" onAction="#SaveToFile" prefHeight="40.0" prefWidth="100.0" text="Save" />
-            <Button fx:id="fontstyle" mnemonicParsing="false" onAction="#ChangeFontStyle" prefHeight="34.0" prefWidth="99.0" text="Font Style" />
-            <ColorPicker fx:id="colorpicker" onAction="#ChangeColor" prefHeight="33.0" prefWidth="100.0" promptText="Select Color" stylesheets="@../Styles/Style.css" />
+            <Button fx:id="savetofile" alignment="CENTER_RIGHT" graphicTextGap="10.0" mnemonicParsing="false" onAction="#SaveToFile" prefHeight="38.0" prefWidth="86.0" styleClass="ic_button_save" stylesheets="@../Styles/Style.css" text="Save" />
+            <Button fx:id="fontstyle" graphicTextGap="10.0" mnemonicParsing="false" onAction="#ChangeFontStyle" prefHeight="38.0" prefWidth="86.0" styleClass="ic_button_font" stylesheets="@../Styles/Style.css" text="Font" />
+            <ColorPicker fx:id="colorpicker" onAction="#ChangeColor" prefHeight="38.0" prefWidth="86.0" promptText="Select Color" styleClass="ic_button_color" stylesheets="@../Styles/Style.css" />
          </children>
          <BorderPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -80,10 +62,13 @@
       </VBox>
    </left>
    <center>
-      <TextArea fx:id="textArea" onDragDetected="#ChangeColor" prefHeight="275.0" prefWidth="516.0" text="Speech to Text" wrapText="true" BorderPane.alignment="CENTER">
+      <TextArea fx:id="textArea" text="Speech to Text" wrapText="true" BorderPane.alignment="CENTER">
          <font>
             <Font name="System Bold" size="20.0" />
          </font>
+         <BorderPane.margin>
+            <Insets right="10.0" top="2.0" />
+         </BorderPane.margin>
       </TextArea>
    </center>
 </BorderPane>
